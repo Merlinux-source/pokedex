@@ -14,11 +14,25 @@ func init() {
 			name:        "exit",
 			description: "Exit the Pokedex",
 			callback:    commandExit,
+			conf:        &CommandConf{},
 		},
 		"help": cliCommand{
 			name:        "help",
 			description: "Show this help message",
 			callback:    commandHelp,
+			conf:        &CommandConf{},
+		},
+		"map": cliCommand{
+			name:        "map",
+			description: "Paginate the Map locations forward",
+			callback:    commandMap,
+			conf:        &CommandConf{},
+		},
+		"mapb": cliCommand{
+			name:        "mapb",
+			description: "Paginate the Map locations backwards",
+			callback:    CommandMapb,
+			conf:        &CommandConf{},
 		},
 	}
 }
@@ -35,7 +49,7 @@ func main() {
 			fmt.Printf("Unknown command: %s\n", cleanInput[0])
 		}
 		if ok {
-			err := command.callback()
+			err := command.callback(command.conf)
 			if err != nil {
 				fmt.Printf("Error: %s\n", err)
 			}

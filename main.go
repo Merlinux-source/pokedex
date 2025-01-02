@@ -1,26 +1,17 @@
 package main
 
 import (
-	"slices"
-	"strings"
+	"bufio"
+	"fmt"
+	"os"
 )
 
-func cleanInput(input string) []string {
-	stripedString := strings.TrimSpace(input)
-	newLinesAreSpaces := strings.ReplaceAll(stripedString, "\n", " ")
-	splitInput := strings.Split(newLinesAreSpaces, " ")
-
-splitLoop:
-	for wordIndex, word := range splitInput {
-		splitInput[wordIndex] = strings.ToLower(word)
-		if len(word) < 1 {
-			splitInput = slices.Delete(splitInput, wordIndex, wordIndex+1)
-			goto splitLoop
-		}
+func main() {
+	buf := bufio.NewScanner(os.Stdin)
+	for {
+		fmt.Print("Pokedex > ")
+		buf.Scan()
+		cleanInput := cleanInput(buf.Text())
 
 	}
-	return splitInput
-}
-
-func main() {
 }

@@ -28,7 +28,7 @@ func init() {
 			name:        "map",
 			description: "Paginate the Map locations forward",
 			callback:    commandMap,
-			conf:        &CommandConf{},
+			conf:        &CommandConf{Context: map[string]string{"Next": "", "Previous": ""}},
 		},
 	}
 	supportedCommands["mapb"] = cliCommand{ // this has to be defined seperately so that the map navigation share the next and the previous url.

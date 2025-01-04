@@ -3,7 +3,6 @@ package main
 import "boot.dev-Pokedex/internal/pokecache"
 
 type CommandConf struct {
-	Next      string
-	Previous  string
+	Context   map[string]string
 	HttpCache *pokecache.Cache
 }

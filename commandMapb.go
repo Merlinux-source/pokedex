@@ -7,7 +7,7 @@ import (
 )
 
 func CommandMapb(conf *CommandConf) error {
-	url := conf.Previous
+	url := conf.Context["Previous"]
 	mapApiResponse := pokeapi.MapApiResponse{}
 	if url == "" {
 		url = pokeapi.MapBaseUrl
@@ -21,8 +21,8 @@ func CommandMapb(conf *CommandConf) error {
 
 	json.Unmarshal(resText, &mapApiResponse)
 
-	conf.Next = mapApiResponse.Next
-	conf.Previous = mapApiResponse.Previous
+	conf.conf.Context["Next"] = mapApiResponse.Next
+	conf.conf.Context["Previous"] = mapApiResponse.Previous
 
 	for _, location := range mapApiResponse.Results {
 		fmt.Println(location.Name)

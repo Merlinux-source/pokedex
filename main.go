@@ -56,6 +56,7 @@ func main() {
 			fmt.Printf("Unknown command: %s\n", cleanInput[0])
 		}
 		if ok {
+			command.conf.Argv = cleanInput
 			err := command.callback(command.conf)
 			if err != nil {
 				fmt.Printf("Error: %s\n", err)

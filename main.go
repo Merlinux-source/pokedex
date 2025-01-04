@@ -1,6 +1,7 @@
 package main
 
 import (
+	"boot.dev-Pokedex/internal/pokeapi"
 	"boot.dev-Pokedex/internal/pokecache"
 	"bufio"
 	"fmt"
@@ -45,11 +46,22 @@ func init() {
 	}
 }
 
+type Pokedex struct {
+	Pokemon []pokeapi.Pokemon
+	Count   int
+}
+
+func (pd *Pokedex) Add(pkmn *pokeapi.Pokemon) {
+	pd.Pokemon = append(pd.Pokemon, pkmn)
+}
+
 func main() {
 	buf := bufio.NewScanner(os.Stdin)
 	httpCache := pokecache.NewCache(10 * time.Second)
+	pokedex := Pokedex{}
 	for _, cmd := range supportedCommands { // insert the http cache reference to the command configuration.
 		cmd.conf.HttpCache = httpCache
+		cmd.conf.pokedex = &pokedex
 	}
 
 	for {

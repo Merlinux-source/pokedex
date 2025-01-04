@@ -8,9 +8,9 @@ import (
 
 func commandMap(conf *CommandConf) error {
 	url := conf.Context["Next"]
-	mapApiResponse := pokeapi.MapApiResponse{}
+	mapApiResponse := pokeapi.NamedAPIResourceList{}
 	if url == "" {
-		url = pokeapi.MapBaseUrl
+		url = pokeapi.APIV2_LocationAreaBaseURL
 	}
 
 	resText, err := conf.HttpCache.CacheGet(url)

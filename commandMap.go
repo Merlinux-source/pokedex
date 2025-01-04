@@ -4,27 +4,21 @@ import (
 	"boot.dev-Pokedex/internal/pokeapi"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 )
 
 func commandMap(conf *CommandConf) error {
 	url := conf.Next
+	mapApiResponse := pokeapi.MapApiResponse{}
 	if url == "" {
 		url = pokeapi.MapBaseUrl
 	}
 
-	res, err := http.Get(url)
+	resText, err := conf.HttpCache.CacheGet(url)
 	if err != nil {
+		println(err.Error())
 		return err
 	}
-	defer res.Body.Close()
 
-	mapApiResponse := pokeapi.MapApiResponse{}
-	resText, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		return err
-	}
 	json.Unmarshal(resText, &mapApiResponse)
 
 	conf.Next = mapApiResponse.Next

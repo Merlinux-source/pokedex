@@ -1,9 +1,11 @@
 package main
 
 import (
+	"boot.dev-Pokedex/internal/pokecache"
 	"bufio"
 	"fmt"
 	"os"
+	"time"
 )
 
 var supportedCommands map[string]cliCommand
@@ -28,17 +30,22 @@ func init() {
 			callback:    commandMap,
 			conf:        &CommandConf{},
 		},
-		"mapb": cliCommand{
-			name:        "mapb",
-			description: "Paginate the Map locations backwards",
-			callback:    CommandMapb,
-			conf:        &CommandConf{},
-		},
+	}
+	supportedCommands["mapb"] = cliCommand{ // this has to be defined seperately so that the map navigation share the next and the previous url.
+		name:        "mapb",
+		description: "Paginate the Map locations backwards",
+		callback:    CommandMapb,
+		conf:        supportedCommands["map"].conf,
 	}
 }
 
 func main() {
 	buf := bufio.NewScanner(os.Stdin)
+	httpCache := pokecache.NewCache(10 * time.Second)
+	for _, cmd := range supportedCommands { // insert the http cache reference to the command configuration.
+		cmd.conf.HttpCache = httpCache
+	}
+
 	for {
 		fmt.Print("Pokedex > ")
 		buf.Scan()

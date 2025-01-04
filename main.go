@@ -37,8 +37,14 @@ func init() {
 			callback:    commandExplore,
 			conf:        &CommandConf{},
 		},
+		"catch": cliCommand{
+			name:        "catch",
+			description: "Catch the Pokemon",
+			callback:    commandCatch,
+			conf:        &CommandConf{},
+		},
 	}
-	supportedCommands["mapb"] = cliCommand{ // this has to be defined seperately so that the map navigation share the next and the previous url.
+	supportedCommands["mapb"] = cliCommand{ // this has to be defined separately so that the map navigation share the next and the previous url.
 		name:        "mapb",
 		description: "Paginate the Map locations backwards",
 		callback:    CommandMapb,
@@ -51,7 +57,7 @@ type Pokedex struct {
 	Count   int
 }
 
-func (pd *Pokedex) Add(pkmn *pokeapi.Pokemon) {
+func (pd *Pokedex) Add(pkmn pokeapi.Pokemon) {
 	pd.Pokemon = append(pd.Pokemon, pkmn)
 }
 
@@ -61,7 +67,7 @@ func main() {
 	pokedex := Pokedex{}
 	for _, cmd := range supportedCommands { // insert the http cache reference to the command configuration.
 		cmd.conf.HttpCache = httpCache
-		cmd.conf.pokedex = &pokedex
+		cmd.conf.Pokedex = &pokedex
 	}
 
 	for {

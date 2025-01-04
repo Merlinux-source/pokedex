@@ -22,7 +22,8 @@ func TestCache_Add(t *testing.T) {
 		fields fields
 		args   args
 	}{
-		{name: "add", fields: fields{mu: sync.RWMutex{}, duration: time.Second, entries: map[string]cacheEntry{}}, args: args{key: "key", value: []byte("value")}},
+		{name: "add", fields: fields{mu: sync.RWMutex{}, duration: time.Second * 5, entries: map[string]cacheEntry{}}, args: args{key: "key", value: []byte("value")}},
+		{name: "add a hour ago", fields: fields{mu: sync.RWMutex{}, duration: time.Second * 5, entries: map[string]cacheEntry{"key": {createdAt: time.Now().Add(time.Duration(-1) * time.Hour), value: []byte("value")}}}, args: args{key: "key", value: nil}}, // checks if the cache invalidation system works.
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -52,7 +53,26 @@ func TestCache_Get(t *testing.T) {
 		wantValue []byte
 		wantOk    bool
 	}{
-		// TODO: Add test cases.
+		{name: "normal value", fields: fields{
+			mu:       sync.RWMutex{},
+			duration: time.Second * 10,
+			entries: map[string]cacheEntry{
+				"key": cacheEntry{
+					time.Now(),
+					[]byte("value"),
+				},
+			},
+		}},
+		{name: "expired value", fields: fields{
+			mu:       sync.RWMutex{},
+			duration: time.Second * 5,
+			entries: map[string]cacheEntry{
+				"key": cacheEntry{
+					time.Now().Add(time.Duration(-1) * time.Hour),
+					[]byte("value"),
+				},
+			},
+		}},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -61,6 +81,7 @@ func TestCache_Get(t *testing.T) {
 				duration: tt.fields.duration,
 				entries:  tt.fields.entries,
 			}
+			time.Sleep(5 * time.Second)
 			gotValue, gotOk := c.Get(tt.args.key)
 			if !reflect.DeepEqual(gotValue, tt.wantValue) {
 				t.Errorf("Get() gotValue = %v, want %v", gotValue, tt.wantValue)
@@ -101,23 +122,21 @@ func TestCache_readLoop(t *testing.T) {
 }
 
 func TestNewCache(t *testing.T) {
-	type args struct {
-		duration time.Duration
-	}
 	tests := []struct {
-		name            string
-		args            args
-		wantReturnCache *Cache
+		name string
+		args time.Duration
+		want *Cache
 	}{
-		// TODO: Add test cases.
+		{"5 Secound Duration", time.Second * 5, NewCache(time.Second * 5)},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if gotReturnCache := NewCache(tt.args.duration); !reflect.DeepEqual(gotReturnCache, tt.wantReturnCache) {
-				t.Errorf("NewCache() = %v, want %v", gotReturnCache, tt.wantReturnCache)
+			if got := NewCache(tt.args); !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("NewCache() = %v, want %v", got, tt.want)
 			}
 		})
 	}
+
 }
 
 func Test_cacheEntry_CreatedAt(t *testing.T) {
@@ -155,7 +174,8 @@ func Test_cacheEntry_Value(t *testing.T) {
 		fields fields
 		want   []byte
 	}{
-		// TODO: Add test cases.
+		{name: "value", fields: fields{createdAt: time.Now(), value: []byte("value")}, want: []byte("value")},
+		{name: "expired value", fields: fields{createdAt: time.Now().Add(time.Duration(-1) * time.Hour), value: nil}, want: nil},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

@@ -1,6 +1,8 @@
 package pokecache
 
 import (
+	"io"
+	"net/http"
 	"sync"
 	"time"
 )
@@ -38,15 +40,13 @@ func (c *Cache) Get(key string) (value []byte, ok bool) {
 func (c *Cache) readLoop(interval time.Duration) {
 	// a simple cache invalidator.
 	for ; ; time.Sleep(interval) {
-		c.mu.RLock()
+		c.mu.Lock()
 		for key, entry := range c.entries {
 			if entry.createdAt.Before(time.Now().Add(-c.duration)) {
-				c.mu.Lock()
 				delete(c.entries, key)
-				c.mu.Unlock()
 			}
 		}
-		c.mu.RUnlock()
+		c.mu.Unlock()
 	}
 }
 
@@ -58,4 +58,23 @@ func NewCache(duration time.Duration) (returnCache *Cache) {
 	go returnCache.readLoop(duration) // initiate the cache invalidation in a new thread.
 
 	return returnCache
+}
+
+// CacheGet Helper function to http get an url. save the body content in the cache, if the content is cached, skip the get request.
+func (c *Cache) CacheGet(url string) ([]byte, error) {
+	if val, err := c.Get(url); val != nil && err == false {
+		return val, nil
+	}
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+	resText, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return nil, err
+	}
+
+	c.Add(url, resText)
+	return resText, nil
 }

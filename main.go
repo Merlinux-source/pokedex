@@ -30,6 +30,12 @@ func init() {
 			callback:    commandMap,
 			conf:        &CommandConf{Context: map[string]string{"Next": "", "Previous": ""}},
 		},
+		"explore": cliCommand{
+			name:        "explore",
+			description: "Explore the Pokemon available at location X",
+			callback:    commandExplore,
+			conf:        &CommandConf{},
+		},
 	}
 	supportedCommands["mapb"] = cliCommand{ // this has to be defined seperately so that the map navigation share the next and the previous url.
 		name:        "mapb",

@@ -7,6 +7,11 @@ import (
 )
 
 func commandExplore(conf *CommandConf) error {
+	if len(conf.Argv) < 2 || len(conf.Argv) > 3 {
+		fmt.Printf("Usage: %s [Location name]\n->\tTo get location names use the Map and Mapb commands to paginate through the location names.\r\n", conf.Argv[0])
+		return fmt.Errorf("Invalid command usage")
+
+	}
 	exploreLocation := conf.Argv[1]
 	if exploreLocation == "" {
 		fmt.Printf("Usage: %s [ExploreLocation]\n]", conf.Argv[0])

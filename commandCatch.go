@@ -12,6 +12,7 @@ import (
 func commandCatch(conf *CommandConf) error {
 	if len(conf.Argv) < 2 || len(conf.Argv) > 3 {
 		fmt.Printf("Usage: %s [PokemonToCatch]\n]", os.Args[0])
+		return fmt.Errorf("Invalid command usage")
 	}
 	pokemonToCatch := conf.Argv[1]
 	res, err := conf.HttpCache.CacheGet(pokeapi.APIV2_PokemonBaseURL + pokemonToCatch)

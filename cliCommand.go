@@ -5,4 +5,5 @@ type cliCommand struct {
 	description string
 	callback    func(conf *CommandConf) error
 	conf        *CommandConf
+	usage       string
 }

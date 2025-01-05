@@ -56,6 +56,13 @@ func init() {
 			conf:        &CommandConf{},
 			usage:       "inspect [Pokemon]",
 		},
+		"pokedex": cliCommand{
+			name:        "pokedex",
+			description: "List contents of your Pokedex",
+			callback:    commandPokedex,
+			conf:        &CommandConf{},
+			usage:       "pokedex",
+		},
 	}
 	supportedCommands["mapb"] = cliCommand{ // this has to be defined separately so that the map navigation share the next and the previous url.
 		name:        "mapb",
